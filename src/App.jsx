@@ -21,7 +21,7 @@ export default function App() {
   if (!inputText.trim()) return;
   setView("loading");
 
-  const backendUrl = "http://localhost:8787/ai/recommend";
+  const backendUrl = "/ai/recommend";
   const body = {
     prompt: inputText.trim(),
     date,
