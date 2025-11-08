@@ -8,7 +8,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 
 // Top-level App component (the entire UI is inside App)
-import App from "./App";
+import App from "./App.jsx";
 
 // Bootstrap CSS (optional): provides ready-made, responsive UI utilities and components.
 // Styles are available globally.
