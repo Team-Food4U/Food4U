@@ -296,7 +296,7 @@ export default function App() {
     const backendUrl = "http://localhost:8787/ai/recommend";
 
     const body = {
-      prompt: inputText.trim(),   // 👈 key must be `prompt` (not query)
+      prompt: inputText.trim(),   // ✅ correct key
       date,
       time,
     };
