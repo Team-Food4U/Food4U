@@ -301,6 +301,8 @@ export default function App() {
       time,
     };
 
+    console.log("🔍 Sending to backend:", backendUrl, body);
+    
     const res = await fetch(backendUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
