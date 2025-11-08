@@ -1,23 +1,55 @@
+/*
+  Small supplemental stylesheet containing utility styles used by the template (logo animation, card padding, muted text). Mostly leftover from the starter template.
+*/
+
+/* #root
+   This selector targets the element with id="root" (the top-level container in index.html).
+*/
 #root {
+  /* Maximum width keeps content readable on wide screens */
   max-width: 1280px;
+
+  /* center the whole app horizontally */
   margin: 0 auto;
+
+  /* outer spacing so content doesn't touch the browser edges */
   padding: 2rem;
+
+  /* center text inside #root by default */
   text-align: center;
 }
 
+/* .logo
+   A reusable class for the app logo image. Controls size and hover behavior.
+   - height: sets visual size of the logo
+   - padding: gives breathing room around the image
+   - will-change: a hint to browsers that the filter property may change soon (used for performance)
+   - transition: smooths the change when hover effects occur
+*/
 .logo {
   height: 6em;
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
 }
+
+/* Hover effect for logos: adds a subtle glow/drop-shadow when the user hovers the logo.
+*/
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
+/* .logo.react:hover
+   A specific hover glow for a "React" logo — slightly different color.
+*/
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
+/* @keyframes logo-spin
+   A simple CSS animation that rotates an element 360 degrees.
+   We don't start it automatically for everyone; see the "prefers-reduced-motion"
+*/
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
@@ -27,16 +59,26 @@
   }
 }
 
+/* Accessibility: only run the animation when the user has NOT requested reduced motion.
+*/
 @media (prefers-reduced-motion: no-preference) {
+  /* Example: animate the second link's logo slowly and infinitely */
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
   }
 }
 
+/* .card
+   A small utility to add space inside content boxes.
+   You can apply <div class="card">...</div> to get consistent padding.
+*/
 .card {
   padding: 2em;
 }
 
+/* .read-the-docs
+   A tiny helper class used for a small informational paragraph/link.
+*/
 .read-the-docs {
   color: #888;
 }

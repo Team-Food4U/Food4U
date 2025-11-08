@@ -1,62 +1,88 @@
+/*
+  Global stylesheet for the Food4U React app.
+  Defines the dark theme colors, layout structure, buttons, dropdowns, modal styles, and visual appearance of all shared UI components.
+  These styles apply throughout the entire application.
+*/
+
 :root {
   /* Dark theme colors */
-  --bg: #0b0f12;
-  --card: #0f1720;
-  --muted: #9aa3ab;
-  --accent: #8b2233;
-  --text: #e6eef6;
-  --muted-border: #162127;
+  --bg: #0b0f12; /* page background color (very dark) */
+  --card: #0f1720; /* card background (slightly lighter than page) */
+  --muted: #9aa3ab; /* muted text / secondary text color */
+  --accent: #8b2233; /* accent color used for buttons (Food4U brand) */
+  --text: #e6eef6; /* main text color (light) */
+  --muted-border: #162127; /* subtle border color for muted separators */
 }
 
-/* page */
+/* -------------------------
+   Base / page setup
+   -------------------------
+   Set global fonts, full height for the app root so flex layouts behave predictably.
+*/
 html,
 body,
 #root {
   height: 100%;
   margin: 0;
+  /* System font stack - fast and familiar on most devices */
   font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--bg); /* use the page background variable */
+  color: var(--text); /* default text color */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* container */
+/* -------------------------
+   App container (center column)
+   -------------------------
+   .app-shell centers the app horizontally and sets a max width.
+   The height is set to the viewport minus margins so the app fits the screen.
+*/
 .app-shell {
-  max-width: 720px;
-  margin: 24px auto;
-  height: calc(100vh - 48px);
+  max-width: 720px; /* keep content reasonably narrow on large screens */
+  margin: 24px auto; /* center horizontally with vertical margin */
+  height: calc(100vh - 48px); /* fill the screen (viewport) minus margins */
   display: flex;
   flex-direction: column;
 }
 
-/* FULLSCREEN prompt variant: fits the viewport exactly and disables page scroll */
+/* -------------------------
+   Fullscreen prompt variant
+   - When you're showing the initial prompt (first page), we use a fullscreen style.
+*/
 .app-shell.fullscreen {
   margin: 0 auto;
-  height: 100vh;
+  height: 100vh; /* full viewport height */
   max-width: 720px;
 }
+
+/* This targets the main card when in fullscreen mode so the center card fills vertically */
 .app-shell.fullscreen .center-card {
   height: 100%;
-  border-radius: 0; /* optional — keeps it flush to the viewport edges vertically */
+  border-radius: 0; /* remove rounded corners if you want the card to feel flush to edges */
   padding: 28px;
-  overflow: hidden;
+  overflow: hidden; /* prevents scrollbars inside the card */
 }
+
+/* Hide the header in this fullscreen variant to keep the visual minimalism. */
 .app-shell.fullscreen .header {
   display: none;
 }
+
+/* Keep the input area near the bottom when fullscreen */
 .app-shell.fullscreen .input-area {
-  /* keep input visible at bottom */
   margin-top: 0;
 }
 
-/* header - Food4U top-left */
+/* -------------------------
+   Header (top-left brand)
+   ------------------------- */
 .header {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 12px; /* spacing between header and card */
 }
 .brand {
   font-weight: 700;
@@ -64,13 +90,17 @@ body,
   color: var(--text);
 }
 
-/* main card area */
+/* -------------------------
+   The main card area (center)
+   -------------------------
+   This is the box with the shadow that appears on the results page.
+*/
 .center-card {
   background: var(--card);
   border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(2, 6, 10, 0.6);
+  box-shadow: 0 8px 30px rgba(2, 6, 10, 0.6); /* subtle shadow for elevation */
   padding: 28px;
-  flex: 1;
+  flex: 1; /* grow to fill vertical space in the app shell */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -78,7 +108,11 @@ body,
   border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-/* when prompt is shown we center it via .prompt-wrapper */
+/* -------------------------
+   Prompt centering
+   -------------------------
+   Used to center the "What are you craving" prompt vertically/horizontally.
+*/
 .prompt-wrapper {
   display: flex;
   align-items: center;
@@ -86,7 +120,7 @@ body,
   flex: 1;
 }
 
-/* prompt line */
+/* The main prompt text styling */
 .prompt-line {
   font-size: 22px;
   line-height: 1.2;
@@ -94,15 +128,20 @@ body,
   text-align: center;
 }
 
-/* INLINE BUTTONS (right now? and top filters) */
+/* -------------------------
+   Buttons (inline and filter)
+   -------------------------
+   inline-link-btn is used for the small pill-style buttons in the text (ex: Right now)
+   filter-btn is used for the top filter chips (DC, date/time)
+*/
 .inline-link-btn,
 .filter-btn {
-  background: var(--accent);
+  background: var(--accent); /* the accent color (brand) */
   color: #fff;
   text-decoration: none;
   cursor: pointer;
   padding: 6px 10px;
-  border-radius: 999px;
+  border-radius: 999px; /* pill shape */
   border: none;
   font-weight: 600;
   font-size: 18px;
@@ -111,16 +150,16 @@ body,
   align-items: center;
   justify-content: center;
   transition: transform 120ms ease, box-shadow 120ms ease;
-  box-shadow: 0 6px 14px rgba(139, 34, 51, 0.12);
+  box-shadow: 0 6px 14px rgba(139, 34, 51, 0.12); /* faint colored shadow */
 }
 
-/* top filter row buttons smaller */
+/* Make filter buttons slightly smaller when inside the top filters container */
 .top-filters .filter-btn {
   font-size: 14px;
   padding: 6px 10px;
 }
 
-/* button focus & hover */
+/* Focus and hover styling for accessibility & interactivity */
 .inline-link-btn:focus,
 .filter-btn:focus {
   outline: none;
@@ -128,32 +167,36 @@ body,
 }
 .inline-link-btn:hover,
 .filter-btn:hover {
-  transform: translateY(-1px);
+  transform: translateY(-1px); /* subtle lift on hover */
 }
 
-/* bottom input area */
+/* -------------------------
+   Bottom input area (message box)
+   -------------------------
+   This is fixed inside the center card near the bottom; it contains the text input and Send button.
+*/
 .input-area {
   display: flex;
   gap: 8px;
   align-items: center;
   padding-top: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.03);
-  margin-top: auto;
+  margin-top: auto; /* push to the bottom of the card */
 }
 
-/* input field style */
+/* The main user input field */
 .user-input {
-  flex: 1;
+  flex: 1; /* expand to fill available space */
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.04);
   padding: 12px 16px;
   font-size: 16px;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.02); /* faint inner highlight */
   color: var(--text);
   outline: none;
 }
 
-/* send button */
+/* The Send button */
 .send-btn {
   border-radius: 999px;
   padding: 10px 16px;
@@ -164,51 +207,71 @@ body,
   box-shadow: 0 4px 12px rgba(139, 34, 51, 0.18);
 }
 
-/* overlay when modal open */
+/* -------------------------
+   Overlay (when modal is open)
+   -------------------------
+   This dark semi-transparent layer covers the app and sits beneath modals.
+*/
 .overlay {
   position: fixed;
-  inset: 0;
+  inset: 0; /* shorthand for top:0; right:0; bottom:0; left:0 */
   background: rgba(0, 0, 0, 0.55);
   z-index: 999;
 }
 
-/* small centered modal/popup (Pick date & time) */
+/* -------------------------
+   Small centered modal (Pick date & time)
+   -------------------------
+   A simple floating panel centered on the viewport.
+*/
 .small-modal {
   position: fixed;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%); /* perfectly center */
   background: var(--card);
   border-radius: 12px;
   box-shadow: 0 12px 36px rgba(2, 6, 10, 0.6);
   padding: 16px;
-  z-index: 1000;
+  z-index: 1000; /* sit above overlay */
   width: 280px;
   color: var(--text);
   border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-/* top filter button row */
+/* -------------------------
+   Top filter row
+   -------------------------
+   Holds the DC dropdown and the Right-now / date-time pill.
+*/
 .top-filters {
   display: flex;
   gap: 10px;
   margin-bottom: 12px;
-  flex-wrap: wrap;
-  position: relative;
-  z-index: 1; /* ensures dropdown appears above other content */
+  flex-wrap: wrap; /* allows wrapping on small screens */
+  position: relative; /* so the dropdown can be absolutely positioned */
+  z-index: 1; /* ensure it sits above some other elements */
 }
 
-/* DC dropdown positioning and sizing */
+/* -------------------------
+   DC dropdown (positioning)
+   -------------------------
+   The dropdown is absolute relative to the parent that contains it.
+*/
 .dc-dropdown {
   position: absolute;
-  top: 110%;
+  top: 110%; /* slightly below the button */
   left: 0;
   width: 220px;
   transform: none;
-  z-index: 2000; /* above modal overlay */
+  z-index: 2000; /* above the modal overlay if necessary */
 }
 
-/* chat-style output area */
+/* -------------------------
+   Results / chat area
+   -------------------------
+   The results appear below the filters in a simple chat/list style.
+*/
 .results-area {
   margin-top: 8px;
 }
@@ -224,12 +287,17 @@ body,
   font-size: 15px;
 }
 
-/* list items formatting */
+/* Individual result item styling */
 .item {
   margin-bottom: 10px;
   padding: 12px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(
+    255,
+    255,
+    255,
+    0.02
+  ); /* slightly lighter panel for each result */
   border: 1px solid rgba(255, 255, 255, 0.03);
 }
 .item .title {
@@ -248,19 +316,27 @@ body,
   color: var(--text);
 }
 
-/* dropdown buttons inside small-modal (choose DC) */
+/* Buttons inside small-modal (when showing DC options) */
 .small-modal .btn-light {
   background: rgba(255, 255, 255, 0.04);
   color: var(--text);
   border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-/* footer small text */
+/* -------------------------
+   Small helper: footer-like text under the app-shell
+   -------------------------
+   This targets any inline style block directly under .app-shell (used for a small selected summary line).
+*/
 .app-shell > div[style] {
   color: var(--muted);
 }
 
-/* small screen tweaks */
+/* -------------------------
+   Responsive adjustments for small screens
+   -------------------------
+   These make the UI comfortable on narrow/mobile viewports.
+*/
 @media (max-width: 600px) {
   .app-shell {
     margin: 12px;
@@ -282,9 +358,14 @@ body,
   }
 }
 
-/* Remove center-card background on first page */
+/* -------------------------
+   Remove center-card background on first page
+   - This class is applied when you want the first prompt page to be
+     *without* the card background (so it looks like simple centered text).
+   - The class name used in JS must match this (here: "prompt-background").
+*/
 .center-card.prompt-background {
-  background: transparent;
-  border: none;
-  box-shadow: none;
+  background: transparent; /* no card background on prompt */
+  border: none; /* remove border so it's flush */
+  box-shadow: none; /* no shadow for the centered prompt look */
 }

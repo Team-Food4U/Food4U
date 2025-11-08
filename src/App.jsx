@@ -1,20 +1,36 @@
+/*
+  The main UI component for the Food4U app.
+  Controls all app state (prompt → loading → results), user input handling, date/time picker logic, Dining Common filters, and displaying recommendations.
+  This file is the core of the frontend and orchestrates how the interface behaves.
+*/
+
 import React, { useState, useEffect, useRef } from "react";
 
-/* Get current date/time parts in America/New_York timezone */
+/* -------------------------
+   Helper functions & utils
+   ------------------------- */
+
+/* Get current date/time parts in America/New_York timezone.
+   We capture date in "YYYY-MM-DD" and time in "HH:MM" (24h) formats, plus an ISO string and timestamp. This is used as the *default* "UMass local" now for the UI.
+*/
 function getNYDateParts() {
   const local = new Date();
+  // Convert to a string in the America/New_York timezone
   const nyStr = local.toLocaleString("en-US", { timeZone: "America/New_York" });
+  // Create a Date object from that string so we can read ISO/time parts reliably
   const nyDate = new Date(nyStr);
   const iso = nyDate.toISOString();
   return {
-    date: iso.slice(0, 10),
-    time: nyDate.toTimeString().slice(0, 5),
+    date: iso.slice(0, 10), // "YYYY-MM-DD"
+    time: nyDate.toTimeString().slice(0, 5), // "HH:MM"
     iso,
-    ts: nyDate.getTime(),
+    ts: nyDate.getTime(), // timestamp in ms
   };
 }
 
-/* Format "YYYY-MM-DD" -> "Mon D" */
+/* Convert a "YYYY-MM-DD" string into a short human-friendly date,
+   e.g. "Nov 7" — useful for UI labels. If parsing fails, we return the input.
+*/
 function formatDateDisplay(dateStr) {
   try {
     const d = new Date(dateStr + "T00:00:00");
@@ -24,17 +40,21 @@ function formatDateDisplay(dateStr) {
   }
 }
 
-/* Format "HH:MM" -> "h:MM AM/PM" */
+/* Convert "HH:MM" (24-hour) into "h:MM AM/PM" for nicer display.
+   Example: "14:05" => "2:05 PM"
+*/
 function formatTimeDisplay(timeStr) {
   if (!timeStr) return "";
   const [hh, mm] = timeStr.split(":").map(Number);
   if (Number.isNaN(hh) || Number.isNaN(mm)) return timeStr;
   const ampm = hh >= 12 ? "PM" : "AM";
-  const hour12 = ((hh + 11) % 12) + 1;
+  const hour12 = ((hh + 11) % 12) + 1; // convert 0->12, 13->1 etc
   return `${hour12}:${String(mm).padStart(2, "0")} ${ampm}`;
 }
 
-/* Mock recommendations */
+/* Small mock dataset used while developing (or if backend is not connected).
+   Each item has: food name, dining common (dc), area within the DC, calories, and serving size text.
+*/
 const MOCK_RECOMMENDATIONS = [
   {
     food: "BBQ Pulled Pork Sandwich",
@@ -108,35 +128,62 @@ const MOCK_RECOMMENDATIONS = [
   },
 ];
 
+/* -------------------------
+   Main React component
+   ------------------------- */
+
 export default function App() {
+  /* DEFAULTS:
+     We capture the UMass-local "now" at mount time and store it in a ref.
+     useRef lets the value to persist across renders and not trigger re-renders when it is read.
+  */
   const defaultParts = useRef(getNYDateParts());
+
+  /* Compute "two weeks later" based on the captured default timestamp.
+     We store this in a ref as well (twoWeeksParts.current contains the object).
+     Gives us the max allowed date/time the user can pick.
+  */
   const twoWeeksParts = useRef(null);
   twoWeeksParts.current = (() => {
-    const twoWeeksMs = 14 * 24 * 60 * 60 * 1000;
+    const twoWeeksMs = 14 * 24 * 60 * 60 * 1000; // 14 days in ms
     const later = new Date(defaultParts.current.ts + twoWeeksMs);
     const iso = later.toISOString();
     return {
-      date: iso.slice(0, 10),
-      time: later.toTimeString().slice(0, 5),
+      date: iso.slice(0, 10), // YYYY-MM-DD
+      time: later.toTimeString().slice(0, 5), // HH:MM
       iso,
       ts: later.getTime(),
     };
   })();
 
+  /* Helpful constants: minDate and maxDate as strings (YYYY-MM-DD)
+     used to set input[type="date"] min/max attributes.
+  */
   const minDate = defaultParts.current.date;
   const maxDate = twoWeeksParts.current.date;
 
+  /* ---------- UI state ---------- */
+  // Which view to show: "prompt" (initial), "loading", or "results"
   const [view, setView] = useState("prompt");
+
+  // Selected date and time (strings). Initialize to the captured defaults.
   const [date, setDate] = useState(defaultParts.current.date);
   const [time, setTime] = useState(defaultParts.current.time);
+
+  // Controls the "Pick date & time" modal visibility
   const [openPromptModal, setOpenPromptModal] = useState(false);
 
+  // Dining Common filter (e.g. All DCs, Worcester, Franklin, etc.)
   const [dc, setDc] = useState("All DCs");
   const [dcDropdownOpen, setDcDropdownOpen] = useState(false);
 
+  // Results returned by backend (or mock)
   const [results, setResults] = useState([]);
+
+  // The user's typed prompt in the input box
   const [inputText, setInputText] = useState("");
 
+  // Options for the dining common dropdown
   const dcOptions = [
     "All DCs",
     "Worcester",
@@ -145,10 +192,16 @@ export default function App() {
     "Berkshire",
     "Other (Paid)",
   ];
+
+  // Reference to the DOM node containing the DC dropdown (used for click-outside)
   const dcRef = useRef();
 
+  /* -------------------------
+     UX: close DC dropdown when clicking outside
+     ------------------------- */
   useEffect(() => {
     function onDoc(e) {
+      // If we have a ref and the clicked element is not inside it, close the dropdown
       if (dcRef.current && !dcRef.current.contains(e.target))
         setDcDropdownOpen(false);
     }
@@ -156,25 +209,44 @@ export default function App() {
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
 
-  // Disable scroll on prompt
+  /* -------------------------
+     Disable page scroll while on the fullscreen prompt view
+     (keeps the first page perfectly centered and non-scrollable)
+     ------------------------- */
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = view === "prompt" ? "hidden" : prev || "";
-    return () => (document.body.style.overflow = prev || "");
+    return () => {
+      document.body.style.overflow = prev || "";
+    };
   }, [view]);
 
+  /* -------------------------
+     Utility: clamp a time string between min and max ("HH:MM")
+     If the user chooses a date that is the min or max boundary, we must ensure the time stays within the allowed range.
+     ------------------------- */
   function clampTime(t, minT, maxT) {
     if (t < minT) return minT;
     if (t > maxT) return maxT;
     return t;
   }
 
+  /* -------------------------
+     Event handlers for the date/time inputs in the modal
+     - handleDateChange: ensures selected date stays within min/max and adjusts the time if necessary (so it's valid for that date).
+     - handleTimeChange: ensures the time stays within min/max for the current date.
+     ------------------------- */
   function handleDateChange(e) {
     let newDate = e.target.value;
+    // enforce min/max
     if (newDate < minDate) newDate = minDate;
     if (newDate > maxDate) newDate = maxDate;
+
+    // determine allowed time range for chosen date
     const minT = newDate === minDate ? defaultParts.current.time : "00:00";
     const maxT = newDate === maxDate ? twoWeeksParts.current.time : "23:59";
+
+    // clamp the existing selected time if needed
     const newTime = clampTime(time, minT, maxT);
     setDate(newDate);
     setTime(newTime);
@@ -182,12 +254,21 @@ export default function App() {
 
   function handleTimeChange(e) {
     let newTime = e.target.value;
+    // allowed range depends on whether the currently selected date is at the min or max bounds
     const minT = date === minDate ? defaultParts.current.time : "00:00";
     const maxT = date === maxDate ? twoWeeksParts.current.time : "23:59";
     newTime = clampTime(newTime, minT, maxT);
     setTime(newTime);
   }
 
+  /* -------------------------
+     Human-friendly label logic for the inline "Right now" button.
+     Rules:
+     - If date & time exactly match captured defaults => show "Right now"
+     - If same date but different time => show "Today, <time>"
+     - Otherwise => show "<Mon D>, <time>"
+     This keeps the button concise while still showing the chosen date/time.
+     ------------------------- */
   function getRightNowLabel() {
     const defaultDate = defaultParts.current.date;
     const defaultTime = defaultParts.current.time;
@@ -198,38 +279,69 @@ export default function App() {
     return `${formatDateDisplay(date)}, ${formatTimeDisplay(time)}`;
   }
 
+  /* -------------------------
+     handleSend: what happens when the user presses "Send"
+     - Validate input
+     - Show loading state
+     - (Here we simulate a fetch with a timeout and use MOCK_RECOMMENDATIONS)
+     - Filter by DC if a specific DC is chosen
+     - Set results and switch to the results view
+     In a production app you would call your backend API here (fetch/axios).
+     ------------------------- */
   async function handleSend() {
-    if (!inputText.trim()) return;
+    if (!inputText.trim()) return; // do nothing on empty input
     setView("loading");
+
+    // simulate a small delay to mimic network/backend processing
     await new Promise((r) => setTimeout(r, 1200));
+
+    // copy mock data and optionally filter
     let out = MOCK_RECOMMENDATIONS.slice();
-    if (dc !== "All DCs")
+    if (dc !== "All DCs") {
       out = out.filter((it) => it.dc.toLowerCase().includes(dc.toLowerCase()));
+    }
+
+    // keep only top 10 results and show them
     setResults(out.slice(0, 10));
     setView("results");
   }
 
+  /* -------------------------
+     Render
+     The JSX below follows a minimal chat-like layout:
+     - header with Food4U brand (always visible)
+     - center area: prompt / loading / results
+     - modal for picking date/time
+     - bottom input area
+     Comments inline explain each section.
+     ------------------------- */
   return (
     <div
       className={`app-shell ${view === "prompt" ? "fullscreen-prompt" : ""}`}
     >
-      {/* Always show header */}
+      {/* Header: brand in the top-left (always visible) */}
       <div className="header">
         <div className="brand">Food4U</div>
       </div>
 
+      {/* Center card.
+          We apply a different background for the results view vs prompt view
+          via the "prompt-background" class (prompt view has no card background). */}
       <div
         className={`center-card ${
           view === "prompt" ? "prompt-background" : ""
         }`}
       >
+        {/* If modal is open, show a full-screen overlay that closes the modal when clicked */}
         {openPromptModal && (
           <div className="overlay" onClick={() => setOpenPromptModal(false)} />
         )}
 
+        {/* PROMPT VIEW */}
         {view === "prompt" && (
           <div className="prompt-wrapper">
             <div className="prompt-line">
+              {/* The inline button replaces "right now" text and opens the date/time modal */}
               What are you craving{" "}
               <button
                 className="inline-link-btn"
@@ -243,14 +355,21 @@ export default function App() {
           </div>
         )}
 
+        {/* LOADING VIEW */}
         {view === "loading" && (
           <div style={{ fontSize: 20, fontWeight: 600 }}>
             Finding best matches...
           </div>
         )}
 
+        {/* RESULTS VIEW */}
         {view === "results" && (
           <>
+            {/* Top filters row:
+                - DC dropdown (left)
+                - Right-now/date-time button (right)
+                The dcRef is used to detect clicks outside the dropdown to close it.
+            */}
             <div className="top-filters" ref={dcRef}>
               <div style={{ position: "relative" }}>
                 <button
@@ -259,6 +378,7 @@ export default function App() {
                 >
                   {dc}
                 </button>
+
                 {dcDropdownOpen && (
                   <div className="small-modal dc-dropdown" role="menu">
                     <div style={{ marginBottom: 8, fontWeight: 700 }}>
@@ -283,6 +403,7 @@ export default function App() {
               </div>
 
               <div>
+                {/* This opens the same Pick date & time modal */}
                 <button
                   className="filter-btn"
                   onClick={() => setOpenPromptModal(true)}
@@ -292,8 +413,10 @@ export default function App() {
               </div>
             </div>
 
+            {/* Results list area: simple chat-style listing */}
             <div className="results-area">
               <div className="chat-bubble">Here's some options for you:</div>
+
               {results.map((it, idx) => (
                 <div className="item" key={idx}>
                   <div className="title">{it.food}</div>
@@ -305,6 +428,7 @@ export default function App() {
                   </div>
                 </div>
               ))}
+
               {results.length === 0 && (
                 <div style={{ color: "var(--muted)" }}>
                   No results for your filters.
@@ -314,6 +438,12 @@ export default function App() {
           </>
         )}
 
+        {/* PICK DATE & TIME MODAL
+            - Uses native <input type="date"> and <input type="time">
+            - min/max attributes are set from minDate/maxDate and twoWeeksParts
+            - When the user saves, we simply close the modal (in the production version,
+              you'd typically re-run the search or re-request results from the backend)
+        */}
         {openPromptModal && (
           <div className="small-modal" role="dialog" aria-modal="true">
             <div
@@ -332,6 +462,7 @@ export default function App() {
                 Close
               </button>
             </div>
+
             <label style={{ fontSize: 13, color: "var(--muted)" }}>Date</label>
             <input
               className="form-control"
@@ -341,6 +472,7 @@ export default function App() {
               min={minDate}
               max={maxDate}
             />
+
             <label
               style={{ fontSize: 13, color: "var(--muted)", marginTop: 8 }}
             >
@@ -354,6 +486,7 @@ export default function App() {
               min={date === minDate ? defaultParts.current.time : "00:00"}
               max={date === maxDate ? twoWeeksParts.current.time : "23:59"}
             />
+
             <div
               style={{
                 display: "flex",
@@ -371,6 +504,10 @@ export default function App() {
           </div>
         )}
 
+        {/* BOTTOM INPUT AREA
+            - Text input where user types the food request
+            - Press Enter or click Send to trigger handleSend
+        */}
         <div className="input-area" style={{ marginTop: 16 }}>
           <input
             className="user-input"
