@@ -289,8 +289,46 @@ export default function App() {
      In a production app you would call your backend API here (fetch/axios).
      ------------------------- */
   async function handleSend() {
-    if (!inputText.trim()) return; // do nothing on empty input
-    setView("loading");
+  if (!inputText.trim()) return;
+  setView("loading");
+
+  try {
+    const backendUrl = "http://localhost:8787/ai/recommend"; // adjust if deployed
+
+    const body = {
+      query: inputText.trim(),
+      dc: dc === "All DCs" ? null : dc,
+      date,
+      time,
+    };
+
+    const res = await fetch(backendUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) throw new Error("Backend request failed");
+
+    const data = await res.json();
+    const items = data.results || data.recommendations || [];
+
+    const out = items.map((it) => ({
+      food: it.name || it.food_name || "Unnamed Item",
+      dc: it.location || it.dc || it.dining_common || "Unknown DC",
+      area: it.area || it.station || "General",
+      cal: it.calories || it.cal || 0,
+      serving: it.serving_size || "1 serving",
+    }));
+
+    setResults(out.slice(0, 10));
+    setView("results");
+  } catch (err) {
+    console.error("Recommendation error:", err);
+    setResults(MOCK_RECOMMENDATIONS.slice(0, 5)); // fallback
+    setView("results");
+  }
+}
 
     // simulate a small delay to mimic network/backend processing
     await new Promise((r) => setTimeout(r, 1200));
