@@ -289,6 +289,7 @@ export default function App() {
      In a production app you would call your backend API here (fetch/axios).
      ------------------------- */
   async function handleSend() {
+    console.log("✅ handleSend triggered");
   if (!inputText.trim()) return;
   setView("loading");
 
