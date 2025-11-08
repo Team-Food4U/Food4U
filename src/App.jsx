@@ -296,8 +296,7 @@ export default function App() {
     const backendUrl = "http://localhost:8787/ai/recommend";
 
     const body = {
-      query: inputText.trim(),
-      dc: dc === "All DCs" ? null : dc,
+      prompt: inputText.trim(),   // 👈 key must be `prompt` (not query)
       date,
       time,
     };
@@ -329,21 +328,6 @@ export default function App() {
     setView("results");
   }
 }
-
-
-    // simulate a small delay to mimic network/backend processing
-    await new Promise((r) => setTimeout(r, 1200));
-
-    // copy mock data and optionally filter
-    let out = MOCK_RECOMMENDATIONS.slice();
-    if (dc !== "All DCs") {
-      out = out.filter((it) => it.dc.toLowerCase().includes(dc.toLowerCase()));
-    }
-
-    // keep only top 10 results and show them
-    setResults(out.slice(0, 10));
-    setView("results");
-  }
 
   /* -------------------------
      Render
