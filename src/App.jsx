@@ -62,12 +62,24 @@ export default function App() {
     setResults(out.slice(0, 10));
     setView("results");
   } catch (err) {
-    console.error("❌ Backend connection error:", err);
-    setResults([]);
-    setView("results");
-  }
+  console.error("❌ Backend connection error:", err);
+  setView("error");
 }
-
+}
+  
+if (view === "error") {
+  return (
+    <div className="app-shell">
+      <div className="header"><div className="brand">Food4U</div></div>
+      <div className="center-card">
+        <div className="chat-bubble">
+          Could not load menu items — check backend connection.
+        </div>
+      </div>
+    </div>
+  );
+}
+  
   return (
     <div className="app-shell">
       <div className="header"><div className="brand">Food4U</div></div>
