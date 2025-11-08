@@ -293,7 +293,7 @@ export default function App() {
   setView("loading");
 
   try {
-    const backendUrl = "http://localhost:8787/ai/recommend"; // adjust if deployed
+    const backendUrl = "http://localhost:8787/ai/recommend";
 
     const body = {
       query: inputText.trim(),
@@ -325,10 +325,11 @@ export default function App() {
     setView("results");
   } catch (err) {
     console.error("Recommendation error:", err);
-    setResults(MOCK_RECOMMENDATIONS.slice(0, 5)); // fallback
+    setResults(MOCK_RECOMMENDATIONS.slice(0, 5));
     setView("results");
   }
 }
+
 
     // simulate a small delay to mimic network/backend processing
     await new Promise((r) => setTimeout(r, 1200));
