@@ -297,10 +297,11 @@ export default function App() {
     const backendUrl = "http://localhost:8787/ai/recommend";
 
     const body = {
-      prompt: inputText.trim(),   // ✅ correct key
-      date,
-      time,
-    };
+  prompt: inputText.trim(),   // 👈 backend expects 'prompt'
+  dc: dc === "All DCs" ? null : dc,
+  date,
+  time,
+};
 
     console.log("🔍 Sending to backend:", backendUrl, body);
     
