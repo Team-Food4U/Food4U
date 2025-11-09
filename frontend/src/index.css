@@ -1,0 +1,292 @@
+/*
+  Global stylesheet for the Food4U React app.
+*/
+
+:root {
+  --bg: #0b0f12;
+  --card: #0f1720;
+  --muted: #9aa3ab;
+  --accent: #8b2233;
+  --text: #e6eef6;
+  --muted-border: #162127;
+}
+
+/* Base setup */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* App container */
+.app-shell {
+  max-width: 720px;
+  margin: 24px auto;
+  height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fullscreen prompt variant */
+.app-shell.fullscreen,
+.app-shell.fullscreen-prompt {
+  margin: 0 auto;
+  height: 100vh;
+  max-width: 720px;
+}
+
+.app-shell.fullscreen .center-card,
+.app-shell.fullscreen-prompt .center-card {
+  height: 100%;
+  border-radius: 0;
+  padding: 28px;
+  overflow: hidden;
+}
+
+.app-shell.fullscreen .header,
+.app-shell.fullscreen-prompt .header {
+  display: none;
+}
+
+.app-shell.fullscreen .input-area,
+.app-shell.fullscreen-prompt .input-area {
+  margin-top: 0;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.brand {
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--text);
+}
+
+/* Main card */
+.center-card {
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(2, 6, 10, 0.6);
+  padding: 28px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* Prompt centering */
+.prompt-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+.prompt-line {
+  font-size: 22px;
+  line-height: 1.2;
+  color: var(--text);
+  text-align: center;
+}
+
+/* Buttons */
+.inline-link-btn,
+.filter-btn {
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: none;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+  box-shadow: 0 6px 14px rgba(139, 34, 51, 0.12);
+}
+
+.top-filters .filter-btn {
+  font-size: 14px;
+  padding: 6px 10px;
+}
+
+.inline-link-btn:focus,
+.filter-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(139, 34, 51, 0.16);
+}
+.inline-link-btn:hover,
+.filter-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Input area */
+.input-area {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+  margin-top: auto;
+}
+
+.user-input {
+  flex: 1;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 12px 16px;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text);
+  outline: none;
+}
+
+.send-btn {
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(139, 34, 51, 0.18);
+}
+
+/* Overlay for modal */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 999;
+}
+
+/* Small modal */
+.small-modal {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: 0 12px 36px rgba(2, 6, 10, 0.6);
+  padding: 16px;
+  z-index: 1000;
+  width: 280px;
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* Top filter row */
+.top-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+/* DC dropdown */
+.dc-dropdown {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 220px;
+  transform: none;
+  z-index: 2000;
+}
+
+/* Results area */
+.results-area {
+  margin-top: 8px;
+}
+.chat-bubble {
+  background: transparent;
+  border: none;
+  padding: 0 0 10px 0;
+  margin-bottom: 8px;
+  white-space: normal;
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 15px;
+}
+
+.item {
+  margin-bottom: 10px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+.item .title {
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.item .meta {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+.item .cal {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+}
+
+/* Buttons in small modal */
+.small-modal .btn-light {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* Helper: footer-like inline style text */
+.app-shell > div[style] {
+  color: var(--muted);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .app-shell {
+    margin: 12px;
+    max-width: 100%;
+  }
+  .center-card {
+    padding: 18px;
+  }
+  .prompt-line {
+    font-size: 18px;
+  }
+  .inline-link-btn {
+    font-size: 16px;
+    padding: 4px 8px;
+  }
+  .top-filters .filter-btn {
+    font-size: 13px;
+    padding: 6px 8px;
+  }
+}
+
+/* First page: no card background */
+.center-card.prompt-background {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}

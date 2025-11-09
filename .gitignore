@@ -1,0 +1,26 @@
+# Node modules and build outputs
+node_modules/
+dist/
+build/
+.vite/
+
+# Python cache & virtual envs
+__pycache__/
+*.pyc
+venv/
+.env/
+.venv/
+
+# Environment & secret files
+.env
+.env.*
+*.env
+
+# Local backups / junk
+Food4U-backup/
+Food4U-safe-backup/
+Food4U-leaky/
+*.zip
+*.log
+.DS_Store
+Thumbs.db
