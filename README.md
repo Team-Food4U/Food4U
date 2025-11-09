@@ -60,4 +60,66 @@ In building Food4U, we learned how to connect AI with real-world data scraping a
 - Adding meal-planning and nutrition-tracking features to assist users in meeting their nutrition goals  
 - Integrating real-time wait times for dining halls to help users fit meals into their schedules  
 - Expanding restaurant and cafe coverage with more detailed menu items and ratings
-ems and ratings
+
+## Local Setup Instructions
+
+Follow these steps to run Food4U locally. This setup uses our existing Supabase database and scraped dining data, so no additional scraping or configuration is required.
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/Team-Food4U/Food4U.git
+cd Food4U
+````
+
+### 2. Set up the backend
+
+```bash
+cd backend
+npm install
+```
+
+Create a `.env` file inside the `backend` folder:
+
+```
+SUPABASE_URL=https://tdvoyttslabrzcrdlutq.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=YOUR_SERVICE_ROLE_KEY_HERE
+OPENAI_API_KEY=YOUR_OPENAI_KEY_HERE
+PORT=8787
+```
+
+Start the backend server:
+
+```bash
+npm run dev
+```
+
+### 3. Set up the frontend
+
+Open a new terminal:
+
+```bash
+cd frontend
+npm install
+```
+
+Create a `.env` file inside the `frontend` folder:
+
+```
+VITE_API_URL=http://localhost:8787
+```
+
+Start the frontend:
+
+```bash
+npm run dev
+```
+
+### 4. Access the app
+
+Open the URL printed in the frontend terminal, typically:
+
+```
+http://localhost:5173
+```
+
+Food4U should now be fully functional using the shared Supabase dataset and AI ranking system.
