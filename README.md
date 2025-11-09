@@ -61,6 +61,8 @@ In building Food4U, we learned how to connect AI with real-world data scraping a
 - Integrating real-time wait times for dining halls to help users fit meals into their schedules  
 - Expanding restaurant and cafe coverage with more detailed menu items and ratings
 
+---
+
 ## Local Setup Instructions
 
 Follow these steps to run Food4U locally. This setup uses our existing Supabase database and scraped dining data, so no additional scraping or configuration is required.
